@@ -1,0 +1,26 @@
+# Define que todos os arquivos de texto usarão LF (Unix-style)
+* text=auto eol=lf
+
+# Força LF em arquivos específicos do projeto
+*.ts     text eol=lf
+*.html   text eol=lf
+*.scss   text eol=lf
+*.css    text eol=lf
+*.json   text eol=lf
+*.md     text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.xml    text eol=lf
+*.gitignore text eol=lf
+*.editorconfig text eol=lf
+
+# Binários ou arquivos que não devem ser convertidos
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.ttf    binary
+*.woff   binary
+*.woff2  binary
+*.eot    binary
