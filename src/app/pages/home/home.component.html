@@ -1,27 +1,25 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title class="ion-text-start">PokeExplorer</ion-title>
+    <ion-title>PokeExplorer</ion-title>
     <ion-buttons slot="end">
-      <ion-button>
-        <ion-icon name="color-palette-outline"></ion-icon>
-      </ion-button>
+      <ion-button><ion-icon name="color-palette-outline"></ion-icon></ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-slides [options]="{ slidesPerView: 1.2, spaceBetween: 10 }">
-    <ion-slide *ngFor="let pokemon of pokemons">
+  <swiper-container slides-per-view="1.2" space-between="10">
+    <swiper-slide *ngFor="let p of pokemons">
       <ion-card>
-        <img [src]="pokemon.image" alt="{{ pokemon.name }}" />
+        <img [src]="p.image" alt="{{ p.name }}" />
         <ion-card-header>
-          <ion-card-title>{{ pokemon.name | titlecase }}</ion-card-title>
+          <ion-card-title>{{ p.name | titlecase }}</ion-card-title>
         </ion-card-header>
       </ion-card>
-    </ion-slide>
-  </ion-slides>
+    </swiper-slide>
+  </swiper-container>
 
-  <ion-infinite-scroll (ionInfinite)="loadMorePokemons()" threshold="100px">
+  <ion-infinite-scroll (ionInfinite)="loadMorePokemons($event)" threshold="100px">
     <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando..."></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>

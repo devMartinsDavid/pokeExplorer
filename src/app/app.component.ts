@@ -3,6 +3,9 @@ import {IonicModule} from "@ionic/angular"
 import { CommonModule } from '@angular/common';
 import {IonApp, IonRouterOutlet} from "@ionic/angular";
 import { RouterOutlet } from '@angular/router';
+import { register } from 'swiper/element/bundle'
+
+register();
 
 @Component({
   selector: 'app-root',
