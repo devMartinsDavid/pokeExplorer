@@ -1,13 +1,25 @@
-import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { PokemonModel } from '../../core/models/pokemon.model';
-import { PokemonService } from '../../core/services/pokemon.service';
-import {
-  IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon,
-  IonContent, IonCard, IonCardHeader,
-  IonCardTitle, IonInfiniteScroll, IonInfiniteScrollContent
-} from '@ionic/angular/standalone';
+import { Component, OnInit, ViewChild, ElementRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { PokemonService } from '../../core/services/pokemon.service';
+import { PokemonModel } from '../../core/models/pokemon.model';
 
+import Swiper from 'swiper';
+import { Navigation, Pagination } from 'swiper/modules';
+Swiper.use([Navigation, Pagination]);
+
+import {
+  IonHeader,
+  IonContent,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
+  IonButton,
+  IonIcon,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+} from '@ionic/angular/standalone';
+import { AppLayoutComponent } from '../../shared/templates/app-layout/app-layout.component';
 
 @Component({
   selector: 'app-home',
@@ -26,39 +38,57 @@ import { CommonModule } from '@angular/common';
     IonCard,
     IonCardHeader,
     IonCardTitle,
-    IonInfiniteScroll,
-    IonInfiniteScrollContent
+    AppLayoutComponent
+
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
+
 })
 export class HomeComponent implements OnInit {
+  @ViewChild('swiperEx', { static: false }) swiperEx?: ElementRef<HTMLDivElement>;
+
   pokemons: PokemonModel[] = [];
   offset = 0;
+  limit = 10;
+  currentIndex = 0;
 
   constructor(private pokemonService: PokemonService) { }
 
-  ngOnInit() {
-    this.loadMorePokemons();
+  ngOnInit() { this.loadPokemons(true); }
+
+  get swiper(): any {
+    return (this.swiperEx?.nativeElement as any)?.swiper;
   }
 
-  loadMorePokemons(event?: CustomEvent) {
-    this.pokemonService.getPokemons(10, this.offset)
-      .subscribe({
-        next: (data) => {
-          this.pokemons.push(...data);
-          this.offset += data.length;
+  slideNext() { this.swiper?.slideNext(); }
 
-          if (event?.target) {
-            (event.target as any).complete();
-          }
-        },
-        error: (err) => {
-          console.error('Erro ao carregar pokémons', err);
-          if (event?.target) {
-            (event.target as any).complete();
-          }
-        }
-      });
+  slidePrev() { this.swiper?.slidePrev(); }
+
+  loadPokemons(useCache = false) {
+    this.pokemonService.loadPokemons({ limit: this.limit, offset: this.offset, useCache }).subscribe({
+      next: (data) => {
+        if (this.offset === 0) { this.pokemons = data; }
+        else { this.pokemons = [...this.pokemons, ...data]; }
+
+        this.offset += data.length;
+      },
+      error: (err) => { console.error('Erro ao carregar pokemons:', err); },
+    });
   }
 
+  onSlideChange() {
+    if (!this.swiper) return;
+    this.currentIndex = this.swiper.realIndex;
+    const buffer = 5;
+
+    if (this.currentIndex + buffer >= this.pokemons.length) { this.loadPokemons(); }
+  }
+
+  loadNextPage() {
+    this.pokemonService.loadPokemons({ limit: 10, offset: this.offset }).subscribe((data) => {
+      this.pokemons = [...this.pokemons, ...data];
+      this.offset += data.length;
+      localStorage.setItem('pokemons', JSON.stringify(this.pokemons));
+    });
+  }
 }
