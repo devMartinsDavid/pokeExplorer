@@ -18,8 +18,10 @@ import {
   IonCard,
   IonCardHeader,
   IonCardTitle,
+  IonSearchbar
 } from '@ionic/angular/standalone';
 import { AppLayoutComponent } from '../../shared/templates/app-layout/app-layout.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
@@ -28,6 +30,8 @@ import { AppLayoutComponent } from '../../shared/templates/app-layout/app-layout
   styleUrls: ['./home.component.scss'],
   imports: [
     CommonModule,
+    FormsModule,
+    //ionic
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -38,22 +42,27 @@ import { AppLayoutComponent } from '../../shared/templates/app-layout/app-layout
     IonCard,
     IonCardHeader,
     IonCardTitle,
+    IonSearchbar,
     AppLayoutComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class HomeComponent implements OnInit, AfterViewInit  {
   @ViewChild('swiperEx', { static: false }) private swiperEx?: ElementRef<HTMLDivElement>;
 
   pokemons: PokemonModel[] = [];
   private offset = 0;
   private readonly limit = 10;
   isLoading = false;
+  allPokemonList: { name: string; url: string }[] = [];
+  searchTerm = '';
+  suggestions: { name: string; url: string }[] = [];
 
-  constructor(private readonly pokemonService: PokemonService) { }
+  constructor(private readonly pokemonService: PokemonService) {
+   }
 
   ngOnInit(): void {
-    localStorage.clear(); // Clear cache for testing only
+    this.pokemonService.getAllPokemonNames().subscribe({ next: (list) => this.allPokemonList = list });
     this.loadMorePokemons();
   }
 
@@ -70,9 +79,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     const currentIndex = this.swiper?.realIndex ?? 0;
     const buffer = 5;
 
-    if (currentIndex + buffer >= this.pokemons.length && !this.isLoading) {
-      this.loadMorePokemons();
-    }
+    if (currentIndex + buffer >= this.pokemons.length && !this.isLoading) { this.loadMorePokemons(); }
   }
 
   // Loads more pokemons and updates swiper
@@ -89,9 +96,43 @@ export class HomeComponent implements OnInit, AfterViewInit {
           this.swiper?.update(); // Update swiper after DOM changes
         }, 100);
       },
-      error: () => {
-        this.isLoading = false;
-      },
+      error: () => { this.isLoading = false; },
     });
+  }
+
+  onSearchChange(): void {
+    const term = this.searchTerm.toLowerCase();
+    this.suggestions = term.length >= 2
+      ? this.allPokemonList.filter(p => p.name.includes(term)).slice(0, 10)
+      : [];
+  }
+
+  goToPokemon(suggestion: { name: string; url: string }): void {
+    const alreadyLoaded = this.pokemons.find(p => p.name === suggestion.name);
+
+    if (alreadyLoaded) {
+      const index = this.pokemons.findIndex(p => p.name === suggestion.name);
+      this.swiper?.slideTo(index);
+      this.clearSearch();
+      return;
+    }
+
+    // Load from API
+    this.pokemonService.fetchPokemonDetails(suggestion.url).subscribe({
+      next: (newPoke) => {
+        this.pokemons.push(newPoke);
+        setTimeout(() => {
+          this.swiper?.update();
+          const newIndex = this.pokemons.length - 1;
+          this.swiper?.slideTo(newIndex);
+        }, 100);
+        this.clearSearch();
+      }
+    });
+  }
+
+  private clearSearch(): void {
+    this.searchTerm = '';
+    this.suggestions = [];
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
+import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { PokemonModel } from '../models/pokemon.model';
 
 @Injectable({
@@ -13,7 +13,7 @@ export class PokemonService {
   constructor(private http: HttpClient) { }
 
   //request pokemons api woth all details
-   private fetchPokemons(limit: number, offset: number): Observable<PokemonModel[]> {
+  private fetchPokemons(limit: number, offset: number): Observable<PokemonModel[]> {
     return this.http
       .get<{ results: { name: string; url: string }[] }>(
         `${this.baseUrl}/pokemon?limit=${limit}&offset=${offset}`
@@ -26,7 +26,7 @@ export class PokemonService {
       );
   }
   // Fetch single pokemon details
-  private fetchPokemonDetails(url: string): Observable<PokemonModel> {
+  fetchPokemonDetails(url: string): Observable<PokemonModel> {
     return this.http.get<any>(url).pipe(
       map((data) => ({
         id: data.id,
@@ -37,7 +37,7 @@ export class PokemonService {
     );
   }
 
-   // Load pokemons from cache or API
+  // Load pokemons from cache or API
   loadPokemons(offset: number, limit: number): Observable<PokemonModel[]> {
     const cachedData = this.getCachedPokemons();
 
@@ -76,5 +76,14 @@ export class PokemonService {
     const filteredNew = newPokemons.filter((p) => !cachedIds.has(p.id));
     return [...cached, ...filteredNew];
   }
+
+  getAllPokemonNames(): Observable<{ name: string; url: string }[]> {
+    return this.http
+      .get<{ results: { name: string; url: string }[] }>(
+        `${this.baseUrl}/pokemon?limit=100000&offset=0`
+      )
+      .pipe(map(res => res.results));
+  }
+
 
 }
