@@ -31,6 +31,8 @@
             ],
             "styles": [
               "src/styles.scss",
+              "node_modules/swiper/swiper-bundle.min.css",
+
               {
                 "input": "node_modules/@ionic/angular/css/core.css"
               },
