@@ -1,16 +1,18 @@
 import { Component } from '@angular/core';
-import {IonicModule} from "@ionic/angular"
+import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
-import {IonApp, IonRouterOutlet} from "@ionic/angular";
-import { RouterOutlet } from '@angular/router';
-import { register } from 'swiper/element/bundle'
 
+import { register } from 'swiper/element/bundle'
 register();
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, IonicModule, RouterOutlet],
+  imports: [
+    CommonModule,
+    IonApp,
+    IonRouterOutlet
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
