@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, CUSTOM_ELEMENTS_SCHEMA, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PokemonService } from '../../core/services/pokemon.service';
 import { PokemonModel } from '../../core/models/pokemon.model';
@@ -38,57 +38,60 @@ import { AppLayoutComponent } from '../../shared/templates/app-layout/app-layout
     IonCard,
     IonCardHeader,
     IonCardTitle,
-    AppLayoutComponent
-
+    AppLayoutComponent,
   ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
-
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class HomeComponent implements OnInit {
-  @ViewChild('swiperEx', { static: false }) swiperEx?: ElementRef<HTMLDivElement>;
+export class HomeComponent implements OnInit, AfterViewInit {
+  @ViewChild('swiperEx', { static: false }) private swiperEx?: ElementRef<HTMLDivElement>;
 
   pokemons: PokemonModel[] = [];
-  offset = 0;
-  limit = 10;
-  currentIndex = 0;
+  private offset = 0;
+  private readonly limit = 10;
+  isLoading = false;
 
-  constructor(private pokemonService: PokemonService) { }
+  constructor(private readonly pokemonService: PokemonService) { }
 
-  ngOnInit() { this.loadPokemons(true); }
+  ngOnInit(): void {
+    localStorage.clear(); // Clear cache for testing only
+    this.loadMorePokemons();
+  }
+
+  ngAfterViewInit(): void {
+    // Lifecycle hook, kept for possible future use
+  }
 
   get swiper(): any {
     return (this.swiperEx?.nativeElement as any)?.swiper;
   }
 
-  slideNext() { this.swiper?.slideNext(); }
-
-  slidePrev() { this.swiper?.slidePrev(); }
-
-  loadPokemons(useCache = false) {
-    this.pokemonService.loadPokemons({ limit: this.limit, offset: this.offset, useCache }).subscribe({
-      next: (data) => {
-        if (this.offset === 0) { this.pokemons = data; }
-        else { this.pokemons = [...this.pokemons, ...data]; }
-
-        this.offset += data.length;
-      },
-      error: (err) => { console.error('Erro ao carregar pokemons:', err); },
-    });
-  }
-
-  onSlideChange() {
-    if (!this.swiper) return;
-    this.currentIndex = this.swiper.realIndex;
+  // Called on slide change event
+  onSlideChange(): void {
+    const currentIndex = this.swiper?.realIndex ?? 0;
     const buffer = 5;
 
-    if (this.currentIndex + buffer >= this.pokemons.length) { this.loadPokemons(); }
+    if (currentIndex + buffer >= this.pokemons.length && !this.isLoading) {
+      this.loadMorePokemons();
+    }
   }
 
-  loadNextPage() {
-    this.pokemonService.loadPokemons({ limit: 10, offset: this.offset }).subscribe((data) => {
-      this.pokemons = [...this.pokemons, ...data];
-      this.offset += data.length;
-      localStorage.setItem('pokemons', JSON.stringify(this.pokemons));
+  // Loads more pokemons and updates swiper
+  private loadMorePokemons(): void {
+    this.isLoading = true;
+
+    this.pokemonService.loadPokemons(this.offset, this.limit).subscribe({
+      next: (newPokemons) => {
+        this.pokemons = [...this.pokemons, ...newPokemons];
+        this.offset += newPokemons.length;
+        this.isLoading = false;
+
+        setTimeout(() => {
+          this.swiper?.update(); // Update swiper after DOM changes
+        }, 100);
+      },
+      error: () => {
+        this.isLoading = false;
+      },
     });
   }
 }

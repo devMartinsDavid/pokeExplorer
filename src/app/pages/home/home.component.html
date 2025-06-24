@@ -1,16 +1,26 @@
 <app-layout>
   <ion-content [fullscreen]="true">
-    <swiper-container class="pokemon-swiper" #swiperEx (swiperslidechange)="onSlideChange()" [loop]="true" [slidesPerView]="1"
-      [navigation]="true" [pagination]="{ clickable: true }" [centered-slides]="true" [space-between]="20"
-      [allow-touch-move]="true">
-      <swiper-slide *ngFor="let p of pokemons">
-        <ion-card class="pokemon-card">
-          <ion-card-header>
-            <ion-card-title>{{ p.name | titlecase }}</ion-card-title>
-          </ion-card-header>
-          <img [src]="p.image" [alt]="p.name" />
-        </ion-card>
-      </swiper-slide>
-    </swiper-container>
+    <ng-container *ngIf="pokemons.length > 0">
+      <swiper-container
+        class="pokemon-swiper"
+        #swiperEx
+        (slidechange)="onSlideChange()"
+        [slidesPerView]="1"
+        [navigation]="true"
+        [pagination]="{ clickable: true }"
+        [centered-slides]="true"
+        [space-between]="20"
+        [allow-touch-move]="true"
+      >
+        <swiper-slide *ngFor="let p of pokemons">
+          <ion-card class="pokemon-card">
+            <ion-card-header>
+              <ion-card-title>{{ p.name | titlecase }}</ion-card-title>
+            </ion-card-header>
+            <img [src]="p.image" [alt]="p.name" />
+          </ion-card>
+        </swiper-slide>
+      </swiper-container>
+    </ng-container>
   </ion-content>
 </app-layout>

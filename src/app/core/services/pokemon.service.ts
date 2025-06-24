@@ -8,55 +8,73 @@ import { PokemonModel } from '../models/pokemon.model';
 })
 export class PokemonService {
   private readonly baseUrl = 'https://pokeapi.co/api/v2'
+  private readonly cacheKey = 'pokemons';
 
   constructor(private http: HttpClient) { }
 
   //request pokemons api woth all details
-  private fetchPokemons(limit: number, offset: number): Observable<PokemonModel[]> {
+   private fetchPokemons(limit: number, offset: number): Observable<PokemonModel[]> {
     return this.http
       .get<{ results: { name: string; url: string }[] }>(
         `${this.baseUrl}/pokemon?limit=${limit}&offset=${offset}`
       )
       .pipe(
-        switchMap((res) => {
-          const requests: Observable<PokemonModel>[] = res.results.map((p) =>
-            this.http.get<any>(p.url).pipe(
-              map((data): PokemonModel => ({
-                id: data.id,
-                name: data.name,
-                image: data.sprites.other['official-artwork'].front_default,
-                type: data.types.map((t: any) => t.type.name),
-              }))
-            )
-          );
-
+        switchMap((response) => {
+          const requests = response.results.map((p) => this.fetchPokemonDetails(p.url));
           return forkJoin(requests);
         })
       );
   }
-
-  //load pokemons local cache
-  loadPokemons(options: {
-    limit: number;
-    offset: number;
-    useCache?: boolean;
-  }): Observable<PokemonModel[]> {
-    const { limit, offset, useCache = false } = options;
-
-    //if cache = null
-    if (useCache && offset === 0) {
-      const cached = localStorage.getItem('pokemons');
-      if (cached) {
-        try {
-          return of(JSON.parse(cached) as PokemonModel[]);
-        } catch (e) {
-          console.warn('❌ Erro ao ler cache:', e);
-        }
-      }
-    }
-
-    return this.fetchPokemons(limit, offset).pipe(
-      tap((pokemons) => { if (useCache && offset === 0) { localStorage.setItem('pokemons', JSON.stringify(pokemons)); } })
+  // Fetch single pokemon details
+  private fetchPokemonDetails(url: string): Observable<PokemonModel> {
+    return this.http.get<any>(url).pipe(
+      map((data) => ({
+        id: data.id,
+        name: data.name,
+        image: data.sprites.other['official-artwork'].front_default,
+        type: data.types.map((t: any) => t.type.name),
+      }))
     );
   }
+
+   // Load pokemons from cache or API
+  loadPokemons(offset: number, limit: number): Observable<PokemonModel[]> {
+    const cachedData = this.getCachedPokemons();
+
+    // Return cached slice if enough data available
+    if (cachedData.length >= offset + limit) {
+      return of(cachedData.slice(offset, offset + limit));
+    }
+
+    // Otherwise, fetch from API and update cache
+    return this.fetchPokemons(limit, offset).pipe(
+      map((newPokemons) => {
+        const updatedCache = this.mergeUniquePokemons(cachedData, newPokemons);
+        this.setCachedPokemons(updatedCache);
+        return newPokemons;
+      })
+    );
+  }
+
+  // Helpers for cache management
+
+  private getCachedPokemons(): PokemonModel[] {
+    const cache = localStorage.getItem(this.cacheKey);
+    return cache ? JSON.parse(cache) : [];
+  }
+
+  private setCachedPokemons(pokemons: PokemonModel[]): void {
+    localStorage.setItem(this.cacheKey, JSON.stringify(pokemons));
+  }
+
+  // Merge new pokemons with cache avoiding duplicates by ID
+  private mergeUniquePokemons(
+    cached: PokemonModel[],
+    newPokemons: PokemonModel[]
+  ): PokemonModel[] {
+    const cachedIds = new Set(cached.map((p) => p.id));
+    const filteredNew = newPokemons.filter((p) => !cachedIds.has(p.id));
+    return [...cached, ...filteredNew];
+  }
+
 }
