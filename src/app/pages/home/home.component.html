@@ -1,17 +1,16 @@
 <app-layout>
   <ion-content [fullscreen]="true">
-    <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="onSearchChange()" placeholder="Search Pokémon"
-      debounce="300"></ion-searchbar>
+    <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="onSearchChange()" placeholder="Search Pokémon" debounce="300"></ion-searchbar>
 
     <ul *ngIf="suggestions.length" class="suggestions">
       <li *ngFor="let s of suggestions" (click)="goToPokemon(s)">
         {{ s.name | titlecase }}
       </li>
     </ul>
+
     <ng-container *ngIf="pokemons.length > 0">
       <swiper-container class="pokemon-swiper" #swiperEx (slidechange)="onSlideChange()" [slidesPerView]="1"
-        [navigation]="true" [pagination]="{ clickable: true }" [centered-slides]="true" [space-between]="20"
-        [allow-touch-move]="true">
+        [navigation]="true" [centered-slides]="true" [space-between]="20" [allow-touch-move]="true">
         <swiper-slide *ngFor="let p of pokemons">
           <ion-card class="pokemon-card">
             <ion-card-header>
@@ -22,5 +21,6 @@
         </swiper-slide>
       </swiper-container>
     </ng-container>
+
   </ion-content>
 </app-layout>
