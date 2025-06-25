@@ -1,5 +1,35 @@
 <app-layout>
-  <p>
-    favorites works!
-  </p>
+  <ion-content [fullscreen]="true">
+
+    <div *ngIf="favorites.length === 0" class="no-favorites">
+      <p>Nenhum Pokémon favorito ainda 😢</p>
+    </div>
+    <ion-grid>
+      <ion-row>
+        <ion-col *ngFor="let p of favorites" size="12" size-sm="6" size-md="4" size-lg="3" size-xl="2">
+          <ion-card>
+
+            <ion-card-header>
+              <div class="header-container">
+                <div class="container-title">
+                  <h2>{{ p.name | titlecase }}</h2>
+                </div>
+                <div class="container-button">
+                  <ion-button fill="clear" (click)="remove(p)">
+                    <ion-icon name="heart" color="danger" size="large"></ion-icon>
+                  </ion-button>
+                </div>
+              </div>
+            </ion-card-header>
+
+            <ion-card-content>
+              <img [src]="p.image" [alt]="p.name" class="pokemon-image" />
+            </ion-card-content>
+
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+  </ion-content>
 </app-layout>

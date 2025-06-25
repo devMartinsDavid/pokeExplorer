@@ -75,3 +75,28 @@ ion-content {
 }
 
 
+.card-header-with-like {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.like-button {
+  margin-left: auto;
+  --color: red;
+  --ripple-color: rgba(216, 49, 49, 0.719);
+  --background-hover: rgb(230, 15, 15);
+  --border-radius: 50%;
+  --padding-start: 8px;
+  --padding-end: 8px;
+
+  ion-icon {
+    transition: transform 0.2s ease;
+  }
+
+  ion-button:active ion-icon {
+    transform: scale(1.2);
+  }
+
+
+}
