@@ -1,4 +1,3 @@
-import { LoadingService } from './../../core/services/loading.service';
 import { Component, OnInit, ViewChild, ElementRef, CUSTOM_ELEMENTS_SCHEMA, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PokemonService } from '../../core/services/pokemon.service';
@@ -28,7 +27,8 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonSearchbar,
-  IonSpinner
+  IonSpinner,
+  ViewWillEnter
 } from '@ionic/angular/standalone';
 import { AppLayoutComponent } from '../../shared/templates/app-layout/app-layout.component';
 import { FormsModule } from '@angular/forms';
@@ -61,7 +61,7 @@ import { FavoritesService } from '../../core/services/favorites.service';
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class HomeComponent implements OnInit, AfterViewInit  {
+export class HomeComponent implements OnInit, AfterViewInit, ViewWillEnter {
   @ViewChild('swiperEx', { static: false }) private swiperEx?: ElementRef<HTMLDivElement>;
 
   pokemons: PokemonModel[] = [];
@@ -88,6 +88,13 @@ export class HomeComponent implements OnInit, AfterViewInit  {
 
   ngAfterViewInit(): void {
     // Lifecycle hook, kept for possible future use
+  }
+
+  ionViewWillEnter(): void {
+    const savedFavorites = this.favoritesService.getFavorites();
+    this.pokemons.forEach(p => {
+      p.liked = savedFavorites.some(f => f.name === p.name);
+    });
   }
 
   get swiper(): any {
@@ -137,7 +144,7 @@ export class HomeComponent implements OnInit, AfterViewInit  {
         ? this.allPokemonList.filter(p => p.name.includes(term)).slice(0, 10)
         : [];
 
-        this.isLoadingSuggestions= false;
+      this.isLoadingSuggestions = false;
     }, 300);
   }
 
@@ -162,7 +169,7 @@ export class HomeComponent implements OnInit, AfterViewInit  {
         this.pokemons.push(newPoke);
         newPoke.liked = this.favoritesService.getFavorites().some(f => f.name === newPoke.name);
 
-        setTimeout(() =>{
+        setTimeout(() => {
           this.swiper?.update();
           const newIndex = this.pokemons.length - 1;
           this.swiper?.slideTo(newIndex);
