@@ -1,3 +1,4 @@
 <ion-app>
+  <app-spinner [visible]="!!(isLoading$ | async)" />
   <ion-router-outlet></ion-router-outlet>
 </ion-app>
