@@ -25,6 +25,9 @@
         [navigation]="true" [centered-slides]="true" [space-between]="20" [allow-touch-move]="true">
         <swiper-slide *ngFor="let p of pokemons">
           <ion-card class="pokemon-card">
+            <ion-button fill="clear" (click)="toggleLike(p)" class="like-button" size="large" >
+                <ion-icon [name]="p.liked ? 'heart' : 'heart-outline'" color="danger"></ion-icon>
+            </ion-button>
             <ion-card-header>
               <ion-card-title>{{ p.name | titlecase }}</ion-card-title>
             </ion-card-header>
