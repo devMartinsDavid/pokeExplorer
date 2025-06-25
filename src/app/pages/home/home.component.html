@@ -1,14 +1,26 @@
 <app-layout>
   <ion-content [fullscreen]="true">
-    <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="onSearchChange()" placeholder="Search Pokémon" debounce="300"></ion-searchbar>
+    <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="onSearchChange()" placeholder="Search Pokémon"
+      debounce="300"></ion-searchbar>
 
-    <ul *ngIf="suggestions.length" class="suggestions">
+    <div *ngIf="isLoadingSuggestions" class="suggestions-spinner">
+      <ion-spinner name="dots"></ion-spinner>
+    </div>
+
+    <ul *ngIf="suggestions.length && !isLoadingSuggestions" class="suggestions">
       <li *ngFor="let s of suggestions" (click)="goToPokemon(s)">
         {{ s.name | titlecase }}
       </li>
     </ul>
+    <div *ngIf="!suggestions.length && searchTerm.length >= 2 && !isLoadingSuggestions" class="no-suggestions">
+      <p>Pokémon não encontrado 😞</p>
+    </div>
 
-    <ng-container *ngIf="pokemons.length > 0">
+    <div *ngIf="isLoading" class="loading-pokemons-spinner">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <ng-container *ngIf="!isLoading && pokemons.length > 0 && (!searchTerm || suggestions.length)">
       <swiper-container class="pokemon-swiper" #swiperEx (slidechange)="onSlideChange()" [slidesPerView]="1"
         [navigation]="true" [centered-slides]="true" [space-between]="20" [allow-touch-move]="true">
         <swiper-slide *ngFor="let p of pokemons">

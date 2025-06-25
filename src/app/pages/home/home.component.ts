@@ -1,3 +1,4 @@
+import { LoadingService } from './../../core/services/loading.service';
 import { Component, OnInit, ViewChild, ElementRef, CUSTOM_ELEMENTS_SCHEMA, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PokemonService } from '../../core/services/pokemon.service';
@@ -18,10 +19,12 @@ import {
   IonCard,
   IonCardHeader,
   IonCardTitle,
-  IonSearchbar
+  IonSearchbar,
+  IonSpinner
 } from '@ionic/angular/standalone';
 import { AppLayoutComponent } from '../../shared/templates/app-layout/app-layout.component';
 import { FormsModule } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -43,6 +46,8 @@ import { FormsModule } from '@angular/forms';
     IonCardHeader,
     IonCardTitle,
     IonSearchbar,
+    IonSpinner,
+    //components
     AppLayoutComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -54,14 +59,17 @@ export class HomeComponent implements OnInit, AfterViewInit  {
   private offset = 0;
   private readonly limit = 10;
   isLoading = false;
-  allPokemonList: { name: string; url: string }[] = [];
+  isLoadingSuggestions = false;
   searchTerm = '';
+  allPokemonList: { name: string; url: string }[] = [];
   suggestions: { name: string; url: string }[] = [];
 
-  constructor(private readonly pokemonService: PokemonService) {
-   }
+
+
+  constructor( private readonly pokemonService: PokemonService ) { }
 
   ngOnInit(): void {
+    localStorage.clear();
     this.pokemonService.getAllPokemonNames().subscribe({ next: (list) => this.allPokemonList = list });
     this.loadMorePokemons();
   }
@@ -84,7 +92,7 @@ export class HomeComponent implements OnInit, AfterViewInit  {
 
   // Loads more pokemons and updates swiper
   private loadMorePokemons(): void {
-    this.isLoading = true;
+
 
     this.pokemonService.loadPokemons(this.offset, this.limit).subscribe({
       next: (newPokemons) => {
@@ -102,9 +110,16 @@ export class HomeComponent implements OnInit, AfterViewInit  {
 
   onSearchChange(): void {
     const term = this.searchTerm.toLowerCase();
-    this.suggestions = term.length >= 2
-      ? this.allPokemonList.filter(p => p.name.includes(term)).slice(0, 10)
-      : [];
+
+    this.isLoadingSuggestions = true;
+
+    setTimeout(() => {
+      this.suggestions = term.length >= 2
+        ? this.allPokemonList.filter(p => p.name.includes(term)).slice(0, 10)
+        : [];
+
+        this.isLoadingSuggestions= false;
+    }, 300);
   }
 
   goToPokemon(suggestion: { name: string; url: string }): void {
@@ -117,18 +132,28 @@ export class HomeComponent implements OnInit, AfterViewInit  {
       return;
     }
 
-    // Load from API
-    this.pokemonService.fetchPokemonDetails(suggestion.url).subscribe({
-      next: (newPoke) => {
+    const minDelay = 600;
+    this.isLoading = true;
+
+    const delayPromise = new Promise(resolve => setTimeout(resolve, minDelay));
+
+    //load from API
+    Promise.all([delayPromise, firstValueFrom(this.pokemonService.fetchPokemonDetails(suggestion.url))])
+      .then(([_, newPoke]) => {
         this.pokemons.push(newPoke);
-        setTimeout(() => {
+
+        setTimeout(() =>{
           this.swiper?.update();
           const newIndex = this.pokemons.length - 1;
           this.swiper?.slideTo(newIndex);
-        }, 100);
+        }, 100)
+
         this.clearSearch();
-      }
-    });
+      })
+      .catch((err) => {
+        console.error('Erro ao buscar Pokémon:', err);
+      })
+      .finally(() => { this.isLoading = false; })
   }
 
   private clearSearch(): void {
