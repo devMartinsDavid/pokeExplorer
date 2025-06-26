@@ -1,3 +1,67 @@
-<p>
-  details works!
-</p>
+<ion-content class="ion-padding">
+  <ng-container *ngIf="pokemon as p">
+    <!-- Header -->
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button color="medium" (click)="closeModal()">Back</ion-button>
+        </ion-buttons>
+        <ion-title>{{ p.name | titlecase }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="toggleLike()" [color]="p.liked ? 'danger' : 'medium'">
+            <ion-icon slot="icon-only" [name]="p.liked ? 'heart' : 'heart-outline'"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <!-- Imagem (apenas em telas maiores) -->
+    <div class="image-wrapper" *ngIf="!isMobile">
+      <img [src]="p.image" [alt]="p.name" class="pokemon-image" />
+    </div>
+
+    <!-- Informações básicas -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Características</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>ID:</strong> {{ p.id }}</p>
+        <p><strong>Altura:</strong> {{ p.height! / 10 }} m</p>
+        <p><strong>Peso:</strong> {{ p.weight! / 10 }} kg</p>
+        <p><strong>Experiência Base:</strong> {{ p.base_experience }}</p>
+        <p><strong>Tipo:</strong> {{ p.type.join(', ') | titlecase }}</p>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Stats -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Status de Batalha</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>HP:</strong> {{ p.stats?.hp }}</p>
+        <p><strong>Ataque:</strong> {{ p.stats?.attack }}</p>
+        <p><strong>Defesa:</strong> {{ p.stats?.defense }}</p>
+        <p><strong>Ataque Especial:</strong> {{ p.stats?.special_attack }}</p>
+        <p><strong>Defesa Especial:</strong> {{ p.stats?.special_defense }}</p>
+        <p><strong>Velocidade:</strong> {{ p.stats?.speed }}</p>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Habilidades -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Habilidades</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ul>
+          <li *ngFor="let ability of p.abilities">{{ ability | titlecase }}</li>
+        </ul>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Compartilhar -->
+    <ion-button expand="block" color="primary" (click)="share()">Compartilhar</ion-button>
+  </ng-container>
+</ion-content>

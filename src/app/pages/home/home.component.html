@@ -31,7 +31,7 @@
             <ion-card-header>
               <ion-card-title>{{ p.name | titlecase }}</ion-card-title>
             </ion-card-header>
-            <img [src]="p.image" [alt]="p.name" />
+            <img [src]="p.image" [alt]="p.name" (click)="openDetailsModal(p.id)" />
           </ion-card>
         </swiper-slide>
       </swiper-container>

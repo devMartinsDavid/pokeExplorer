@@ -33,8 +33,23 @@ export class PokemonService {
         name: data.name,
         image: data.sprites.other['official-artwork'].front_default,
         type: data.types.map((t: any) => t.type.name),
+        height: data.height,
+        weight: data.weight,
+        base_experience: data.base_experience,
+        stats: {
+          hp: data.stats.find((s: any) => s.stat.name === 'hp')?.base_stat || 0,
+          attack: data.stats.find((s: any) => s.stat.name === 'attack')?.base_stat || 0,
+          defense: data.stats.find((s: any) => s.stat.name === 'defense')?.base_stat || 0,
+          special_attack: data.stats.find((s: any) => s.stat.name === 'special-attack')?.base_stat || 0,
+          special_defense: data.stats.find((s: any) => s.stat.name === 'special-defense')?.base_stat || 0,
+          speed: data.stats.find((s: any) => s.stat.name === 'speed')?.base_stat || 0,
+        },
+        abilities: data.abilities.map((a: any) => a.ability.name)
       }))
     );
+  }
+  getPokemonById(id: number): Observable<PokemonModel> {
+    return this.fetchPokemonDetails(`${this.baseUrl}/pokemon/${id}`);
   }
 
   // Load pokemons from cache or API
