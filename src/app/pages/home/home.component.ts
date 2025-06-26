@@ -71,7 +71,7 @@ export class HomeComponent implements OnInit, AfterViewInit, ViewWillEnter {
   private readonly limit = 10;
   isLoading = false;
   isLoadingSuggestions = false;
-  message ='';
+  message = '';
   searchTerm = '';
   allPokemonList: { name: string; url: string }[] = [];
   suggestions: { name: string; url: string }[] = [];
@@ -203,11 +203,11 @@ export class HomeComponent implements OnInit, AfterViewInit, ViewWillEnter {
       componentProps: { id: pokemonId }
     });
     await modal.present();
+    await modal.onWillDismiss();
 
-    const { data, role } = await modal.onWillDismiss();
-
-    if (role === 'confirm') {
-      this.message = `Hello, ${data}!`;
-    }
+    const savedFavorites = this.favoritesService.getFavorites();
+    this.pokemons.forEach(p => {
+      p.liked = savedFavorites.some(f => f.name === p.name);
+    });
   }
 }
