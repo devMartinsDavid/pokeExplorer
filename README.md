@@ -1,27 +1,61 @@
-# PokeExplorer
+# 🧭 PokeExplorer
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.5.
+**PokeExplorer** is a modern Pokémon browser built with **Ionic + Angular (Standalone API)**. It fetches data from the [PokeAPI](https://pokeapi.co/) and delivers a fast, responsive, and mobile-friendly experience.
 
-## Development server
+---
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## 🔥 Features
 
-## Code scaffolding
+- 🔍 Search Pokémons with auto-complete suggestions
+- 🧭 Navigate using a Swiper carousel
+- ❤️ Like/favorite Pokémons (saved in `localStorage`)
+- 📄 View detailed Pokémon info in a modal (stats, types, abilities etc.)
+- 📱 Mobile-first responsive UI
+- ⚡ Local caching for better performance
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+---
 
-## Build
+## 🚀 Technologies Used
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- Angular 17 (Standalone Components)
+- Ionic Framework
+- Swiper.js
+- PokeAPI
+- RxJS
+- TypeScript
+- SCSS
 
-## Running unit tests
+---
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## 🛠️ Getting Started
 
-## Running end-to-end tests
+### Clone the repo:
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+```bash
+git https://github.com/devMartinsDavid/pokeExplorer.git
+cd poke-explorer
+-Installl dependencies: npm install
+-Run the app: inonic serve --project pokeExplorer
+-Visit:http://localhost:8100
 
-## Further help
+##📁 Project Structure
+src/
+├── core/             # Models and services
+├── pages/            # Home, Details, Favorites
+├── shared/           # Layout component and components for shared.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+##🌱 Roadmap
+ Filter by Pokémon types
+
+ Add light/dark theme toggle
+
+ Enable Pokémon sharing on social media
+
+ Offline caching using IndexedDB
+
+
+
+
+################################################ 🙌 Credits ################################################
+Data powered by PokeAPI
+Design inspired by Pokémon fans for educational purposes only.
