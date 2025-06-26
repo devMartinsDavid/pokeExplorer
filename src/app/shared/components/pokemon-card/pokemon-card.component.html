@@ -1,3 +1,11 @@
-<p>
-  pokemon-card works!
-</p>
+<ion-card class="pokemon-card">
+  <ion-button fill="clear" (click)="toggleLike()" class="like-button" size="large">
+    <ion-icon [name]="pokemon.liked ? 'heart' : 'heart-outline'" color="danger"></ion-icon>
+  </ion-button>
+
+  <ion-card-header>
+    <ion-card-title>{{ pokemon.name | titlecase }}</ion-card-title>
+  </ion-card-header>
+
+  <img [src]="pokemon.image" [alt]="pokemon.name" (click)="showDetails()" />
+</ion-card>

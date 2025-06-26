@@ -1,0 +1,57 @@
+ion-card {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  box-shadow: none;
+  position: relative;
+
+  img {
+    width: 98%;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  ion-card-title {
+    font-size: 1.2rem;
+    letter-spacing: 0.5pc;
+    margin-top: 0.2rem;
+    color: var(--ion-color-dark);
+  }
+}
+
+.card-header-with-like {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.like-button {
+  margin-left: auto;
+  --color: red;
+  --ripple-color: rgba(197, 161, 161, 0.719);
+  --background-hover: rgb(230, 15, 15);
+  --border-radius: 50%;
+  --padding-start: 8px;
+  --padding-end: 8px;
+
+  ion-icon {
+    transition: transform 0.2s ease;
+  }
+
+  ion-button:active ion-icon {
+    transform: scale(1.2);
+  }
+
+}
