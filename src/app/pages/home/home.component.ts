@@ -1,19 +1,12 @@
 import { Component, OnInit, ViewChild, ElementRef, CUSTOM_ELEMENTS_SCHEMA, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { firstValueFrom } from 'rxjs';
 import { PokemonService } from '../../core/services/pokemon.service';
 import { PokemonModel } from '../../core/models/pokemon.model';
 
 import Swiper from 'swiper';
 import { Navigation, Pagination } from 'swiper/modules';
 Swiper.use([Navigation, Pagination]);
-
-import { addIcons } from 'ionicons';
-import { heart, heartOutline } from 'ionicons/icons';
-
-addIcons({
-  'heart': heart,
-  'heart-outline': heartOutline
-});
 
 import {
   IonHeader,
@@ -22,7 +15,6 @@ import {
   IonTitle,
   IonButtons,
   IonButton,
-  IonIcon,
   IonCard,
   IonCardHeader,
   IonCardTitle,
@@ -33,9 +25,9 @@ import {
 } from '@ionic/angular/standalone';
 import { AppLayoutComponent } from '../../shared/templates/app-layout/app-layout.component';
 import { FormsModule } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
 import { FavoritesService } from '../../core/services/favorites.service';
 import { DetailsComponent } from '../details/details.component';
+import { PokemonCardComponent } from '../../shared/components/pokemon-card/pokemon-card.component';
 
 @Component({
   selector: 'app-home',
@@ -51,7 +43,6 @@ import { DetailsComponent } from '../details/details.component';
     IonTitle,
     IonButtons,
     IonButton,
-    IonIcon,
     IonContent,
     IonCard,
     IonCardHeader,
@@ -60,6 +51,7 @@ import { DetailsComponent } from '../details/details.component';
     IonSpinner,
     //components
     AppLayoutComponent,
+    PokemonCardComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
