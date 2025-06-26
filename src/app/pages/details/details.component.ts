@@ -50,7 +50,7 @@ export class DetailsComponent  implements OnInit {
 
   ngOnInit() {
 
-    this.isMobile = window.innerWidth <= 768;
+    this.isMobile = window.innerWidth < 576;
     //check if  opened
     if (this.id) {
       this.openedAsModal = true;
