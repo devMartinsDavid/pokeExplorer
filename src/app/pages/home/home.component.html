@@ -24,7 +24,7 @@
       <swiper-container class="pokemon-swiper" #swiperEx (slidechange)="onSlideChange()" [slidesPerView]="1"
         [navigation]="true" [centered-slides]="true" [space-between]="20" [allow-touch-move]="true">
         <swiper-slide *ngFor="let p of pokemons">
-          <ion-card class="pokemon-card">
+          <ion-card class="pokemon-card" (click)="openDetailsModal(p.id)">
             <ion-button fill="clear" (click)="toggleLike(p)" class="like-button" size="large" >
                 <ion-icon [name]="p.liked ? 'heart' : 'heart-outline'" color="danger"></ion-icon>
             </ion-button>

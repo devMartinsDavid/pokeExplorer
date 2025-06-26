@@ -28,12 +28,14 @@ import {
   IonCardTitle,
   IonSearchbar,
   IonSpinner,
-  ViewWillEnter
+  ViewWillEnter,
+  ModalController
 } from '@ionic/angular/standalone';
 import { AppLayoutComponent } from '../../shared/templates/app-layout/app-layout.component';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { FavoritesService } from '../../core/services/favorites.service';
+import { DetailsComponent } from '../details/details.component';
 
 @Component({
   selector: 'app-home',
@@ -69,6 +71,7 @@ export class HomeComponent implements OnInit, AfterViewInit, ViewWillEnter {
   private readonly limit = 10;
   isLoading = false;
   isLoadingSuggestions = false;
+  message ='';
   searchTerm = '';
   allPokemonList: { name: string; url: string }[] = [];
   suggestions: { name: string; url: string }[] = [];
@@ -77,7 +80,8 @@ export class HomeComponent implements OnInit, AfterViewInit, ViewWillEnter {
 
   constructor(
     private readonly pokemonService: PokemonService,
-    private readonly favoritesService: FavoritesService
+    private readonly favoritesService: FavoritesService,
+    private modalCtrl: ModalController
   ) { }
 
   ngOnInit(): void {
@@ -191,5 +195,19 @@ export class HomeComponent implements OnInit, AfterViewInit, ViewWillEnter {
   toggleLike(pokemon: PokemonModel): void {
     pokemon.liked = !pokemon.liked;
     this.favoritesService.toggleFavorites(pokemon);
+  }
+
+  async openDetailsModal(pokemonId: number) {
+    const modal = await this.modalCtrl.create({
+      component: DetailsComponent,
+      componentProps: { id: pokemonId }
+    });
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === 'confirm') {
+      this.message = `Hello, ${data}!`;
+    }
   }
 }
