@@ -3,3 +3,11 @@
   bottom: 0;
   width: 100%;
 }
+
+ion-tab-bar{
+  display: flex;
+  justify-content: space-around;
+}
+ion-tab-button:hover{
+  background-color: black;
+}

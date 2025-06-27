@@ -73,6 +73,14 @@ export class DetailsComponent implements OnInit {
     if (this.pokemonId) {
       await this.loadPokemon();
     }
+
+    //accessibility
+    setTimeout(() => {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+    }, 100);
+
   }
 
   private async determinePokemonId() {
@@ -135,7 +143,7 @@ export class DetailsComponent implements OnInit {
 
   async share() {
     if (!this.pokemon) return;
-    const shareData = {
+    const shareData:ShareData = {
       title: `Pokémon ${this.pokemon.name}`,
       text: `Olha esse Pokémon incrível: ${this.pokemon.name}`,
       url: window.location.href
