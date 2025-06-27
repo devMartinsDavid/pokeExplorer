@@ -6,7 +6,7 @@ import { PokemonModel } from '../../core/models/pokemon.model';
 
 import Swiper from 'swiper';
 import { Navigation, Pagination } from 'swiper/modules';
-Swiper.use([Navigation, Pagination]);
+Swiper.use([Navigation]);
 
 import {
   IonHeader,
