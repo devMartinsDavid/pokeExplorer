@@ -15,53 +15,75 @@
           </ion-buttons>
           <ion-title>{{ p.name | titlecase }}</ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="toggleLike()" [color]="p.liked ? 'danger' : 'medium'">
+            <ion-button aria-label="Curtir Pokémon" (click)="toggleLike()" [color]="p.liked ? 'danger' : 'medium'">
               <ion-icon slot="icon-only" [name]="p.liked ? 'heart' : 'heart-outline'"></ion-icon>
             </ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
 
-      <div class="image-wrapper" *ngIf="p.image">
-        <img [src]="p.image" [alt]="p.name" class="pokemon-image" />
+      <div class="image-wrapper portrait-only-image-wrapper" *ngIf="(!isMobile || !isLandscape) && p.image">
+        <img [src]="p.image" [alt]="'Imagem do Pokémon ' + p.name" class="pokemon-image" />
       </div>
 
       <swiper-container #detailsSwiper id="details-swiper" slides-per-view="1" navigation="true" allow-touch-move="true"
-        centered-slides="true" effect="cards" grab-cursor="true">
+        centered-slides="true" effect="cards" grab-cursor="true" class="responsive-swiper">
         <swiper-slide>
-          <ion-card>
+          <ion-card class="responsive-card">
             <ion-card-header><ion-card-title>Características</ion-card-title></ion-card-header>
             <ion-card-content>
-              <p><strong>ID:</strong> {{ p.id }}</p>
-              <p><strong>Altura:</strong> {{ p.height! / 10 }} m</p>
-              <p><strong>Peso:</strong> {{ p.weight! / 10 }} kg</p>
-              <p><strong>Experiência Base:</strong> {{ p.base_experience }}</p>
-              <p><strong>Tipo:</strong> {{ p.type.join(', ') | titlecase }}</p>
+
+              <div class="landscape-flex-wrapper">
+                <div class="landscape-text-content">
+                  <p><strong>ID:</strong> {{ p.id }}</p>
+                  <p><strong>Altura:</strong> {{ p.height! / 10 }} m</p>
+                  <p><strong>Peso:</strong> {{ p.weight! / 10 }} kg</p>
+                  <p><strong>Experiência Base:</strong> {{ p.base_experience }}</p>
+                  <p><strong>Tipo:</strong> {{ p.type.join(', ') | titlecase }}</p>
+                </div>
+                <img *ngIf="isMobile && isLandscape && p.image" [src]="p.image" [alt]="p.name"
+                  [class.landscape-inline-image]="isLandscape" [style.display]="isLandscape ? 'block' : 'none'" />
+              </div>
+
             </ion-card-content>
           </ion-card>
         </swiper-slide>
 
         <swiper-slide>
-          <ion-card>
+          <ion-card class="responsive-card">
             <ion-card-header><ion-card-title>Status de Batalha</ion-card-title></ion-card-header>
             <ion-card-content>
-              <p><strong>HP:</strong> {{ p.stats?.hp }}</p>
-              <p><strong>Ataque:</strong> {{ p.stats?.attack }}</p>
-              <p><strong>Defesa:</strong> {{ p.stats?.defense }}</p>
-              <p><strong>Ataque Especial:</strong> {{ p.stats?.special_attack }}</p>
-              <p><strong>Defesa Especial:</strong> {{ p.stats?.special_defense }}</p>
-              <p><strong>Velocidade:</strong> {{ p.stats?.speed }}</p>
+
+              <div class="landscape-flex-wrapper">
+                <div class="landscape-text-content">
+                  <p><strong>HP:</strong> {{ p.stats?.hp }}</p>
+                  <p><strong>Ataque:</strong> {{ p.stats?.attack }}</p>
+                  <p><strong>Defesa:</strong> {{ p.stats?.defense }}</p>
+                  <p><strong>Ataque Especial:</strong> {{ p.stats?.special_attack }}</p>
+                  <p><strong>Defesa Especial:</strong> {{ p.stats?.special_defense }}</p>
+                  <p><strong>Velocidade:</strong> {{ p.stats?.speed }}</p>
+                </div>
+                 <img *ngIf="isMobile && isLandscape && p.image" [src]="p.image" [alt]="p.name"
+                  [class.landscape-inline-image]="isLandscape" [style.display]="isLandscape ? 'block' : 'none'" />
+              </div>
+
             </ion-card-content>
           </ion-card>
         </swiper-slide>
 
         <swiper-slide>
-          <ion-card>
+          <ion-card class="responsive-card">
             <ion-card-header><ion-card-title>Habilidades</ion-card-title></ion-card-header>
             <ion-card-content>
-              <ul>
-                <li *ngFor="let ability of p.abilities">{{ ability | titlecase }}</li>
-              </ul>
+              <div class="landscape-flex-wrapper">
+                <div class="landscape-text-content">
+                  <ul>
+                    <li *ngFor="let ability of p.abilities">{{ ability | titlecase }}</li>
+                  </ul>
+                </div>
+                 <img *ngIf="isMobile && isLandscape && p.image" [src]="p.image" [alt]="p.name"
+                  [class.landscape-inline-image]="isLandscape" [style.display]="isLandscape ? 'block' : 'none'" />
+              </div>
             </ion-card-content>
           </ion-card>
         </swiper-slide>

@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -51,7 +51,7 @@ interface SwiperElement extends HTMLElement {
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class DetailsComponent implements OnInit {
+export class DetailsComponent implements OnInit, OnDestroy {
   @ViewChild('detailsSwiper') swiperRef?: ElementRef<SwiperElement>;
   @Input() id?: number;
 
@@ -59,6 +59,8 @@ export class DetailsComponent implements OnInit {
   pokemon: PokemonModel | null = null;
   openedAsModal = false;
   isLoading = false;
+  isLandscape = false;
+  isMobile = false;
   private swiperInitialized = false;
 
   constructor(
@@ -69,6 +71,10 @@ export class DetailsComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.checkOrientation();
+    window.addEventListener('resize', this.onResize);
+    window.addEventListener('orientationchange', this.onResize);
+
     await this.determinePokemonId();
     if (this.pokemonId) {
       await this.loadPokemon();
@@ -105,6 +111,16 @@ export class DetailsComponent implements OnInit {
 
   private delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  private onResize = () => {
+    this.checkOrientation();
+    setTimeout(() => this.swiperRef?.nativeElement?.swiper?.update?.(), 300 );
+  }
+
+  checkOrientation = () => {
+    this.isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+    this.isLandscape = window.matchMedia('(orientation: landscape)').matches;
   }
 
   private tryInitializeSwiper() {
@@ -161,5 +177,10 @@ export class DetailsComponent implements OnInit {
 
   closeModal() {
     this.modalCtrl.dismiss();
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('resize', this.onResize);
+    window.removeEventListener('orientationchange', this.onResize);
   }
 }
